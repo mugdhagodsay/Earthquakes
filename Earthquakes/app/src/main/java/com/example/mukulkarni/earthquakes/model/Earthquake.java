@@ -1,14 +1,13 @@
 package com.example.mukulkarni.earthquakes.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.io.Serializable;
 
 
 /**
  * Created by mukulkarni on 3/6/17.
  */
 
-public class Earthquake {
+public class Earthquake implements Serializable{
 
     private String datetime;
     private Integer depth;
@@ -17,7 +16,7 @@ public class Earthquake {
     private String eqid;
     private Double magnitude;
     private Double lat;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private String location;
 
     public String getDatetime() {
         return datetime;
@@ -73,6 +72,16 @@ public class Earthquake {
 
     public void setLat(Double lat) {
         this.lat = lat;
+    }
+
+    public void setLocation(String location)
+    {
+        this.location = location;
+    }
+
+    public String getLocation()
+    {
+        return location;
     }
 
 }
