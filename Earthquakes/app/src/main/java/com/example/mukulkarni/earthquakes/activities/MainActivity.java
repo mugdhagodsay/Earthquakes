@@ -1,11 +1,13 @@
 package com.example.mukulkarni.earthquakes.activities;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -36,23 +38,44 @@ public class MainActivity extends AppCompatActivity {
     private EarthquakeAdapter earthquakeAdapter;
     private ListView lvEarthquakes;
     private String eqDataEndpoint = "http://api.geonames.org/earthquakesJSON?formatted=true&north=44.1&south=-9.9&east=-22.4&west=55.2&username=mkoppelman";
+    private final String EARTHQUAKES = "earthquakes";
+    private final String DATETIME = "datetime";
+    private final String DEPTH = "depth";
+    private final String MAGNITUDE = "magnitude";
+    private final String LATITUDE = "lat";
+    private final String LONGITUDE = "lng";
+    private final String SRC = "src";
+    private final String EQID = "eqid";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Getting reference to the ListView
         lvEarthquakes = (ListView) findViewById(lvItems);
+
+        // Getting reference to Array of Earthquakes
         arrayOfEarthquakes = new ArrayList<>();
+
+        //Getting reference to the EarthQuakeAdapter
         earthquakeAdapter = new EarthquakeAdapter(this, arrayOfEarthquakes);
-      //  getEarthquakeData();
-        new EarthquakeAPI().execute(eqDataEndpoint);
-        for (Earthquake e : arrayOfEarthquakes) {
-            System.out.println("The Magnitude is: " + e.getMagnitude().toString());
+
+        //Check if network is available and we are online get earthquake data else show Alert
+        if (isNetworkAvailable() && isOnline()) {
+            new EarthquakeAPI().execute(eqDataEndpoint);
+        } else {
+            showAlert();
         }
+
+        //Set Adapter
         lvEarthquakes.setAdapter(earthquakeAdapter);
+
+        //ListViewListener
         setupListViewListener();
     }
 
+    //Setup setOnItemClickListener to take the user to the MapActivity
     private void setupListViewListener() {
         lvEarthquakes.setOnItemClickListener(
                 new AdapterView.OnItemClickListener() {
@@ -67,9 +90,35 @@ public class MainActivity extends AppCompatActivity {
         );
     }
 
+    /**
+     * Show Alert dialogue when the user is trying to delete an item
+     */
+    public void showAlert() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage("No Network Detected")
+                .setTitle("Network Error");
+        // Add the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+        // Create the AlertDialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     @Override
     public void onStart() {
         super.onStart();
+        //If network is available and we are online get earthquake data else show Alert
+        if (isNetworkAvailable() && isOnline()) {
+            if(arrayOfEarthquakes == null) {
+                new EarthquakeAPI().execute(eqDataEndpoint);
+            }
+        } else {
+            showAlert();
+        }
     }
 
     @Override
@@ -100,22 +149,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //Read the JSON returned by the server and populate the ListView
-    public void populate(String result)
-    {
+    public void populate(String result) {
         try {
             JSONObject json = new JSONObject(result);
-            JSONArray jsonArray = json.getJSONArray("earthquakes");
+            JSONArray jsonArray = json.getJSONArray(EARTHQUAKES);
             int count = jsonArray.length();
             for (int i = 0; i < count; i++) {
                 JSONObject object = jsonArray.getJSONObject(i);
                 Earthquake earthquake = new Earthquake();
-                earthquake.setDatetime(object.getString("datetime"));
-                earthquake.setDepth(object.getInt("depth"));
-                earthquake.setEqid(object.getString("eqid"));
-                earthquake.setLat(object.getDouble("lat"));
-                earthquake.setLng(object.getDouble("lng"));
-                earthquake.setMagnitude(object.getDouble("magnitude"));
-                earthquake.setSrc(object.getString("src"));
+                earthquake.setDatetime(object.getString(DATETIME));
+                earthquake.setDepth(object.getInt(DEPTH));
+                earthquake.setEqid(object.getString(EQID));
+                earthquake.setLat(object.getDouble(LATITUDE));
+                earthquake.setLng(object.getDouble(LONGITUDE));
+                earthquake.setMagnitude(object.getDouble(MAGNITUDE));
+                earthquake.setSrc(object.getString(SRC));
                 arrayOfEarthquakes.add(earthquake);
             }
             lvEarthquakes.setAdapter(earthquakeAdapter);
@@ -128,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
     //EarthquakeAPI to make the call to the server and get the data to populate the Listview
     private class EarthquakeAPI extends AsyncTask<String, Void, String> {
 
-        public  String getEarthquakeData(String endpoint) throws  IOException {
+        public String getEarthquakeData(String endpoint) throws IOException {
             URL url = new URL(endpoint);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.connect();
@@ -149,8 +197,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
-        protected void onPostExecute(String result)
-        {
+        protected void onPostExecute(String result) {
             populate(result);
         }
 

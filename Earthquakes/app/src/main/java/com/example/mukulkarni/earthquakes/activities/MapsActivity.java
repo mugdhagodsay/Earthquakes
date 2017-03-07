@@ -5,8 +5,9 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.view.Gravity;
-import android.widget.Toast;
+import android.support.v4.content.ContextCompat;
+import android.view.View;
+import android.widget.TextView;
 
 import com.example.mukulkarni.earthquakes.R;
 import com.example.mukulkarni.earthquakes.model.Earthquake;
@@ -21,6 +22,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+
+import static com.example.mukulkarni.earthquakes.R.layout.earthquake_detail;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
@@ -69,9 +72,76 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         } catch (IOException e) {
             e.printStackTrace();
         }
+
         //Add marker
-        mMap.addMarker(new MarkerOptions().position(eqMarker)
+        Marker marker = mMap.addMarker(new MarkerOptions().position(eqMarker)
                 .title("Earthquake Details:"));
+
+        // Setting a custom info window adapter for the google map
+        googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            // Use default InfoWindow frame
+            @Override
+            public View getInfoWindow(Marker arg0) {
+                return null;
+            }
+
+            // Defines the contents of the InfoWindow
+            @Override
+            public View getInfoContents(Marker arg0) {
+
+                // Getting view from the layout file earthquake_detail layout
+                View view = getLayoutInflater().inflate(earthquake_detail, null);
+
+                // Getting the position from the marker
+                LatLng latLng = arg0.getPosition();
+
+                // Getting reference to the TextView to set the latitude
+                TextView tvLat = (TextView) view.findViewById(R.id.tv_lat);
+
+                // Getting reference to the TextView to set the longitude
+                TextView tvLng = (TextView) view.findViewById(R.id.tv_lng);
+
+                //Getting reference to the TextView to set the depth
+                TextView tvDepth = (TextView) view.findViewById(R.id.tv_depth);
+
+                //Getting reference to the TextView to set the magnitude
+                TextView tvMagnitude = (TextView) view.findViewById(R.id.tv_magnitude);
+
+                //Getting reference to the TextView to set the country
+                TextView tvCountry = (TextView) view.findViewById(R.id.tv_country);
+
+                // Setting the latitude
+                tvLat.setText("Latitude: " + latLng.latitude);
+
+                // Setting the longitude
+                tvLng.setText("Longitude: "+ latLng.longitude);
+
+                //Setting the depth
+                tvDepth.setText("Depth: " + earthquake.getDepth() + " KM");
+
+                //Setting the magnitude
+                tvMagnitude.setText("Magnitude: " + earthquake.getMagnitude());
+                if(earthquake.getMagnitude() > 8) {
+                    tvMagnitude.setTextColor(ContextCompat.getColor(getBaseContext(), R.color.red));
+                }
+
+                String countryNameString = "Country: ";
+                if (earthquake.getLocation() == null) {
+                    countryNameString += "Cannot be determined";
+                } else {
+                    countryNameString += earthquake.getLocation();
+                }
+
+                //Setting the country name
+                tvCountry.setText(countryNameString);
+
+                // Returning the view containing InfoWindow contents
+                return view;
+
+            }
+        });
+        marker.showInfoWindow();
         mMap.moveCamera(CameraUpdateFactory.newLatLng(eqMarker));
         mMap.animateCamera(CameraUpdateFactory.newLatLng(eqMarker));
         // Set a listener for info window events.
@@ -80,19 +150,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        String countryNameString = "Country name: ";
-        if (earthquake.getLocation() == null) {
-            countryNameString += "Cannot be determined";
+        if(marker.isVisible()){
+            marker.hideInfoWindow();
         } else {
-            countryNameString += earthquake.getLocation();
+            marker.showInfoWindow();
         }
-        marker.setSnippet(countryNameString + "\n" + "Depth: " + earthquake.getDepth() +
-                " KM" + "\n" + "Magnitude: " + earthquake.getMagnitude() + "\n" + "Time & Date: "
-                + earthquake.getDatetime());
-        Toast toast = Toast.makeText(this, marker.getSnippet(),
-                Toast.LENGTH_LONG);
-        toast.setGravity(Gravity.CENTER | Gravity.TOP, 0, 0);
-        toast.show();
     }
 
 }

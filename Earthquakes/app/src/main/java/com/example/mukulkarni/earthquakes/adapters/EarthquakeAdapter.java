@@ -39,12 +39,13 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.earthquake_row, parent, false);
         }
 
-        // Lookup view for data population
+        //Getting reference to TextView to set Depth
         TextView tvDepth = (TextView) convertView.findViewById(R.id.etDepth);
+
+        //Getting reference to TextView to set Magnitude
         TextView tvMagnitude = (TextView) convertView.findViewById(R.id.etMagnitude);
 
-        // Populate the data into the template view using the data object
-        tvDepth.setText(earthquake.getDepth().toString() + " Km");
+        tvDepth.setText(earthquake.getDepth().toString() + " KM");
         tvMagnitude.setText(earthquake.getMagnitude().toString());
         if(earthquake.getMagnitude() > 8) {
             tvMagnitude.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.red));
