@@ -3,6 +3,7 @@ package com.example.mukulkarni.earthquakes.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.widget.Toast;
 
 import com.example.mukulkarni.earthquakes.R;
 import com.example.mukulkarni.earthquakes.model.Earthquake;
@@ -11,11 +12,16 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap mMap;
+    private String getLocation = "http://maps.googleapis.com/maps/api/geocode/json?latlng=";
+    Earthquake earthquake;
+    Marker marker;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +47,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap = googleMap;
         Intent originalIntent = getIntent();
         Bundle bundle = originalIntent.getExtras();
-        Earthquake earthquake = (Earthquake) bundle.getSerializable("earthquake");
-
+        earthquake = (Earthquake) bundle.getSerializable("earthquake");
         // Add a marker in Sydney and move the camera
-        LatLng eqMarker = new LatLng(earthquake.getLat(),earthquake.getLng());
-        mMap.addMarker(new MarkerOptions().position(eqMarker).title("Marker for earthquake"));
+        LatLng eqMarker = new LatLng(earthquake.getLat(), earthquake.getLng());
+        String location = getLocation+earthquake.getLat()+","+earthquake.getLng();
+        System.out.println("Endpoint: " + location);
+        mMap.addMarker(new MarkerOptions().position(eqMarker)
+                .title("Earthquake Details:"))
+                .setSnippet("Depth: " + earthquake.getDepth() + " KM" + "\n"+"Magnitude: " + earthquake.getMagnitude() + "\n" + "Time & Date: " + earthquake.getDatetime());
         mMap.moveCamera(CameraUpdateFactory.newLatLng(eqMarker));
+        // Set a listener for info window events.
+        mMap.setOnInfoWindowClickListener(this);
     }
 
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        Toast.makeText(this, marker.getSnippet(),
+                Toast.LENGTH_LONG).show();
+    }
 
 }
