@@ -25,46 +25,33 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     }
 
     @Override
-
-    public View getView(int position, View convertView, ViewGroup parent) {
-
+    public View getView(int position, View convertView, ViewGroup parent)
+    {
         // Get the data item for this position
-
         Earthquake earthquake = getItem(position);
         System.out.println("Item Position: " + position);
         System.out.println("Magnitude: " + earthquake.getMagnitude());
         System.out.println("Lat:" + earthquake.getLat());
 
         // Check if an existing view is being reused, otherwise inflate the view
-
-        if (convertView == null) {
-
+        if (convertView == null)
+        {
             convertView = LayoutInflater.from(getContext()).inflate(R.layout.earthquake_row, parent, false);
-
         }
 
-        // Lookup view for data population
-
+        //Getting reference to TextView to set Depth
         TextView tvDepth = (TextView) convertView.findViewById(R.id.etDepth);
 
-
+        //Getting reference to TextView to set Magnitude
         TextView tvMagnitude = (TextView) convertView.findViewById(R.id.etMagnitude);
 
-
-        // Populate the data into the template view using the data object
-
-        tvDepth.setText(earthquake.getDepth().toString() + " Km");
+        tvDepth.setText(earthquake.getDepth().toString() + " KM");
         tvMagnitude.setText(earthquake.getMagnitude().toString());
         if(earthquake.getMagnitude() > 8) {
             tvMagnitude.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.red));
         }
 
-
         // Return the completed view to render on screen
-
         return convertView;
-
     }
-
-
 }
