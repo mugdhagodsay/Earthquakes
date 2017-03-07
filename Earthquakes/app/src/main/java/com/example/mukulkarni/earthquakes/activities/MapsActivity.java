@@ -1,8 +1,11 @@
 package com.example.mukulkarni.earthquakes.activities;
 
 import android.content.Intent;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.Gravity;
 import android.widget.Toast;
 
 import com.example.mukulkarni.earthquakes.R;
@@ -14,6 +17,10 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, GoogleMap.OnInfoWindowClickListener {
 
@@ -48,22 +55,44 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Intent originalIntent = getIntent();
         Bundle bundle = originalIntent.getExtras();
         earthquake = (Earthquake) bundle.getSerializable("earthquake");
+
         // Add a marker in Sydney and move the camera
         LatLng eqMarker = new LatLng(earthquake.getLat(), earthquake.getLng());
-        String location = getLocation+earthquake.getLat()+","+earthquake.getLng();
-        System.out.println("Endpoint: " + location);
+
+        //Get Location information for the earthquake
+        Geocoder geocoder = new Geocoder(this, Locale.getDefault());
+        try {
+            List<Address> addresses = geocoder.getFromLocation(earthquake.getLat(), earthquake.getLng(), 1);
+            for (Address add : addresses) {
+                earthquake.setLocation(add.getCountryName());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //Add marker
         mMap.addMarker(new MarkerOptions().position(eqMarker)
-                .title("Earthquake Details:"))
-                .setSnippet("Depth: " + earthquake.getDepth() + " KM" + "\n"+"Magnitude: " + earthquake.getMagnitude() + "\n" + "Time & Date: " + earthquake.getDatetime());
+                .title("Earthquake Details:"));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(eqMarker));
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(eqMarker));
         // Set a listener for info window events.
         mMap.setOnInfoWindowClickListener(this);
     }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
-        Toast.makeText(this, marker.getSnippet(),
-                Toast.LENGTH_LONG).show();
+        String countryNameString = "Country name: ";
+        if (earthquake.getLocation() == null) {
+            countryNameString += "Cannot be determined";
+        } else {
+            countryNameString += earthquake.getLocation();
+        }
+        marker.setSnippet(countryNameString + "\n" + "Depth: " + earthquake.getDepth() +
+                " KM" + "\n" + "Magnitude: " + earthquake.getMagnitude() + "\n" + "Time & Date: "
+                + earthquake.getDatetime());
+        Toast toast = Toast.makeText(this, marker.getSnippet(),
+                Toast.LENGTH_LONG);
+        toast.setGravity(Gravity.CENTER | Gravity.TOP, 0, 0);
+        toast.show();
     }
 
 }
