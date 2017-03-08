@@ -26,6 +26,7 @@ Here's a walkthrough of implemented user stories:
 
 <img src='http://i.imgur.com/Z464nzH.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
 <img src="http://i.imgur.com/MjMFH94.gif" title='Test Case 1: Simulate Network Error' width='' alt='Test Case 1: Simulate Network Error'/>
+<img src="http://i.imgur.com/MjMFH94.gif" title='Test Case 1: Simulate Network Error' width='' alt='Test Case 1: Simulate Network Error'/>
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
