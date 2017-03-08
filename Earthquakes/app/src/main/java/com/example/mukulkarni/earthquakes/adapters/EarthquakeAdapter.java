@@ -45,11 +45,18 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
         //Getting reference to TextView to set Magnitude
         TextView tvMagnitude = (TextView) convertView.findViewById(R.id.etMagnitude);
 
-        tvDepth.setText(earthquake.getDepth().toString() + " KM");
-        tvMagnitude.setText(earthquake.getMagnitude().toString());
-        if(earthquake.getMagnitude() > 8) {
+        //Getting reference to TextView to set Date
+        TextView tvDate = (TextView) convertView.findViewById(R.id.etDateTime);
+
+        tvDepth.setText("Depth: " + earthquake.getDepth().toString() + " KM");
+        tvMagnitude.setText("Magnitude: " + earthquake.getMagnitude().toString());
+        if(earthquake.getMagnitude() >= 8.0) {
             tvMagnitude.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.red));
+        } else {
+            tvMagnitude.setTextColor(ContextCompat.getColor(parent.getContext(), R.color.colorPrimaryDark));
         }
+        String [] dateTime = earthquake.getDatetime().split(" ");
+        tvDate.setText("Date: " + dateTime[0]);
 
         // Return the completed view to render on screen
         return convertView;
