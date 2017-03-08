@@ -151,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
         if (result == null) {
             showAlert("Oops! Sorry about that.", "Something is not right");
         } else {
-                System.out.println("Result: " + result);
                 try {
                     JSONObject json = new JSONObject(result);
                     JSONArray jsonArray = json.getJSONArray(EARTHQUAKES);

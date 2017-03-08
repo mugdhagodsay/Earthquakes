@@ -27,11 +27,9 @@ public class EarthquakeAPI extends AsyncTask<String, Void, String> {
     }
 
     public String getEarthquakeData(String endpoint) throws IOException {
-        System.out.println("Endpoint: " + endpoint);
             URL url = new URL(endpoint);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.connect();
-            System.out.println("HTTP CODE" + conn.getResponseCode());
             switch (conn.getResponseCode()) {
                 case HttpURLConnection.HTTP_OK:
                     InputStream in = conn.getInputStream();

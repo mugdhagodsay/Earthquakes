@@ -29,10 +29,6 @@ public class EarthquakeAdapter extends ArrayAdapter<Earthquake> {
     {
         // Get the data item for this position
         Earthquake earthquake = getItem(position);
-        System.out.println("Item Position: " + position);
-        System.out.println("Magnitude: " + earthquake.getMagnitude());
-        System.out.println("Lat:" + earthquake.getLat());
-
         // Check if an existing view is being reused, otherwise inflate the view
         if (convertView == null)
         {
