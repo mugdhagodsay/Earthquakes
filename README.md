@@ -28,10 +28,14 @@ Here's a walkthrough of implemented user stories:
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
-## Notes
-
-Describe any challenges encountered while building the app.
-
+## Test Cases
+* Verify that the Earthquakes app displays Network Error dialog when there is no network
+* Verify that when the HTTP Response code is other than 200, the app displays and error message and does not crash
+* Verify that is the JSON returned does not contain "earthquakes", appropriate message is indicated to the user
+* Verify that all the returned earthquakes are displayed in the listview, each earthquake is one item
+* Verify that for each earthquake Magnitude, Depth and Date are displayed in the listview
+* Verify that for Magnitude >= 8.0, property Magnitude is displayed in red
+* Verify that clicking on the earthquake item, user is taken to a Map showing a marker corresponding to the lat,lng of where the earthquake occured
 ## License
 
     Copyright [yyyy] [name of copyright owner]
