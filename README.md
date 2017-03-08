@@ -4,8 +4,6 @@
 
 Submitted by: **Mugdha Kulkarni**
 
-Time spent: **10** hours spent in total
-
 ## User Stories
 
 The following **required** functionality is completed:
@@ -20,16 +18,6 @@ The following **optional** features are implemented:
 * [x] Display earthquake details in an infowindow on the Map
 * [x] Check for network connectivity and if the network is online
 
-## Video Walkthrough 
-
-Here's a walkthrough of implemented user stories:
-
-<img src='http://i.imgur.com/Z464nzH.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
-<img src="http://i.imgur.com/MjMFH94.gif" title='Test Case 1: Simulate Network Error' width='' alt='Test Case 1: Simulate Network Error'/>
-<img src="http://i.imgur.com/MjMFH94.gif" title='Test Case 1: Simulate Network Error' width='' alt='Test Case 1: Simulate Network Error'/>
-
-GIF created with [LiceCap](http://www.cockos.com/licecap/).
-
 ## Test Cases
 * Test Case 1: Verify that the Earthquakes app displays Network Error dialog when there is no network
 * Test Case 2: Verify that when the HTTP Response code is other than 200, the app displays and error message and does not crash
@@ -38,5 +26,15 @@ GIF created with [LiceCap](http://www.cockos.com/licecap/).
 * Test Case 5: Verify that for each earthquake Magnitude, Depth and Date are displayed in the listview
 * Test Case 6: Verify that for Magnitude >= 8.0, property Magnitude is displayed in red
 * Test case 7: Verify that clicking on the earthquake item, user is taken to a Map showing a marker corresponding to the lat,lng of where the earthquake occured
+
+## Video Walkthrough 
+
+Here's a walkthrough of implemented user stories:
+
+<img src='http://i.imgur.com/Z464nzH.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+
+GIF created with [LiceCap](http://www.cockos.com/licecap/).
+
+
 
 
