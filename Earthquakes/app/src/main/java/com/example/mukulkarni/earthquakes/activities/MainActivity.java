@@ -5,7 +5,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -16,18 +15,13 @@ import android.widget.ListView;
 import com.example.mukulkarni.earthquakes.R;
 import com.example.mukulkarni.earthquakes.adapters.EarthquakeAdapter;
 import com.example.mukulkarni.earthquakes.model.Earthquake;
+import com.example.mukulkarni.earthquakes.network.EarthquakeAPI;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.ArrayList;
 
 import static com.example.mukulkarni.earthquakes.R.id.lvItems;
@@ -46,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
     private final String LONGITUDE = "lng";
     private final String SRC = "src";
     private final String EQID = "eqid";
+    private final String STATUS = "status";
+    private final String MESSAGE = "message";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,9 +59,10 @@ public class MainActivity extends AppCompatActivity {
 
         //Check if network is available and we are online get earthquake data else show Alert
         if (isNetworkAvailable() && isOnline()) {
-            new EarthquakeAPI().execute(eqDataEndpoint);
+            EarthquakeAPI eqAPI = new EarthquakeAPI(this);
+            eqAPI.execute(eqDataEndpoint);
         } else {
-            showAlert();
+            showAlert("No Network Detected", "Network Error");
         }
 
         //Set Adapter
@@ -83,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onItemClick(AdapterView<?> adapter, View item, int pos, long id) {
                         Intent intent = new Intent(MainActivity.this, MapsActivity.class);
                         intent.putExtra("position", pos);
-                        intent.putExtra("earthquake", (Serializable) earthquakeAdapter.getItem(pos));
+                        intent.putExtra("earthquake", earthquakeAdapter.getItem(pos));
                         startActivity(intent);
                     }
                 }
@@ -91,12 +88,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Show Alert dialogue when the user is trying to delete an item
+     * Show Alert dialogue when there is an error
      */
-    public void showAlert() {
+    public void showAlert(String message, String title) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setMessage("No Network Detected")
-                .setTitle("Network Error");
+        builder.setMessage(message)
+                .setTitle(title);
         // Add the buttons
         builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -113,11 +110,12 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         //If network is available and we are online get earthquake data else show Alert
         if (isNetworkAvailable() && isOnline()) {
-            if(arrayOfEarthquakes == null) {
-                new EarthquakeAPI().execute(eqDataEndpoint);
+            if (arrayOfEarthquakes == null) {
+                EarthquakeAPI eqAPI = new EarthquakeAPI(this);
+                eqAPI.execute(eqDataEndpoint);
             }
         } else {
-            showAlert();
+            showAlert("No Network Detected", "Network Error");
         }
     }
 
@@ -150,75 +148,37 @@ public class MainActivity extends AppCompatActivity {
 
     //Read the JSON returned by the server and populate the ListView
     public void populate(String result) {
-        try {
-            JSONObject json = new JSONObject(result);
-            JSONArray jsonArray = json.getJSONArray(EARTHQUAKES);
-            int count = jsonArray.length();
-            for (int i = 0; i < count; i++) {
-                JSONObject object = jsonArray.getJSONObject(i);
-                Earthquake earthquake = new Earthquake();
-                earthquake.setDatetime(object.getString(DATETIME));
-                earthquake.setDepth(object.getInt(DEPTH));
-                earthquake.setEqid(object.getString(EQID));
-                earthquake.setLat(object.getDouble(LATITUDE));
-                earthquake.setLng(object.getDouble(LONGITUDE));
-                earthquake.setMagnitude(object.getDouble(MAGNITUDE));
-                earthquake.setSrc(object.getString(SRC));
-                arrayOfEarthquakes.add(earthquake);
-            }
-            lvEarthquakes.setAdapter(earthquakeAdapter);
+        if (result == null) {
+            showAlert("Oops! Sorry about that.", "Something is not right");
+        } else {
+                System.out.println("Result: " + result);
+                try {
+                    JSONObject json = new JSONObject(result);
+                    JSONArray jsonArray = json.getJSONArray(EARTHQUAKES);
+                    int count = jsonArray.length();
+                    for (int i = 0; i < count; i++) {
+                        JSONObject object = jsonArray.getJSONObject(i);
+                        Earthquake earthquake = new Earthquake();
+                        earthquake.setDatetime(object.getString(DATETIME));
+                        earthquake.setDepth(object.getInt(DEPTH));
+                        earthquake.setEqid(object.getString(EQID));
+                        earthquake.setLat(object.getDouble(LATITUDE));
+                        earthquake.setLng(object.getDouble(LONGITUDE));
+                        earthquake.setMagnitude(object.getDouble(MAGNITUDE));
+                        earthquake.setSrc(object.getString(SRC));
+                        arrayOfEarthquakes.add(earthquake);
+                    }
+                    lvEarthquakes.setAdapter(earthquakeAdapter);
 
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+                } catch (JSONException e){
+                    try {
+                        JSONObject json = new JSONObject(result);
+                        showAlert(json.getJSONObject(STATUS).getString(MESSAGE), "ERROR");
+
+                    } catch (JSONException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
     }
-
-    //EarthquakeAPI to make the call to the server and get the data to populate the Listview
-    private class EarthquakeAPI extends AsyncTask<String, Void, String> {
-
-        public String getEarthquakeData(String endpoint) throws IOException {
-            URL url = new URL(endpoint);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.connect();
-            InputStream in = conn.getInputStream();
-            StringBuilder stringBuilder = new StringBuilder();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
-            return stringBuilder.toString();
-        }
-
-        @Override
-        protected void onPreExecute() {
-            // Show progress dialog
-            super.onPreExecute();
-        }
-
-
-        protected void onPostExecute(String result) {
-            populate(result);
-        }
-
-
-        @Override
-        protected String doInBackground(String... params) {
-            try {
-                String result = getEarthquakeData(params[0]);
-                return result;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onProgressUpdate(Void... values) {
-            // Show progress update
-            super.onProgressUpdate(values);
-        }
-
-    }
-
 }
