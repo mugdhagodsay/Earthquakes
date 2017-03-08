@@ -11,14 +11,13 @@ Time spent: **10** hours spent in total
 The following **required** functionality is completed:
 
 * [x] Read JSON data from the Earthquakes API and populate ListView
-* [x] Each earthquake occupies on item in the list and displays Magnitude and Depth
+* [x] Each earthquake occupies one item in the list and displays Magnitude and Depth
 * [x] Earthquakes with magnitude greater than 8 are highlited with red text
 
 The following **optional** features are implemented:
 
-* [x] Clicking on an earthquake item takes the user to Earthquake details where a Map is renedered with a marker at the Latitude,Longitude where the earthquake occured. 
+* [x] Clicking on an earthquake item takes the user to Earthquake details where a Map is renedered with a marker at the Latitude, Longitude where the earthquake occured. 
 * [x] Display earthquake details in an infowindow on the Map
-* [x] Improve style of the earthquake items in the list
 * [x] Check for network connectivity and if the network is online
 
 ## Video Walkthrough 
