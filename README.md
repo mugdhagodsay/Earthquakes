@@ -11,8 +11,8 @@ Time spent: **10** hours spent in total
 The following **required** functionality is completed:
 
 * [x] Read JSON data from the Earthquakes API and populate ListView
-* [x] Each earthquake occupies one item in the list and displays Magnitude and Depth
-* [x] Earthquakes with magnitude greater than 8 are highlited with red text
+* [x] Each earthquake occupies one item in the list and displays Magnitude, Depth and Date
+* [x] Earthquakes with magnitude greater than 8 or equal to 8 are highlited with red text
 
 The following **optional** features are implemented:
 
