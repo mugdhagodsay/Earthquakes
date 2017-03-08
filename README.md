@@ -21,11 +21,11 @@ The following **optional** features are implemented:
 ## Test Cases
 * Test Case 1: Verify that the Earthquakes app displays Network Error dialog when there is no network
 * Test Case 2: Verify that when the HTTP Response code is other than 200, the app displays and error message and does not crash
-* Test Case 3: Verify that is the JSON returned does not contain "earthquakes", appropriate message is indicated to the user
+* Test Case 3: Verify that if the JSON returned does not contain JSONArray "earthquakes", appropriate message is indicated to the user
 * Test Case 4: Verify that all the returned earthquakes are displayed in the listview, each earthquake is one item
 * Test Case 5: Verify that for each earthquake Magnitude, Depth and Date are displayed in the listview
 * Test Case 6: Verify that for Magnitude >= 8.0, property Magnitude is displayed in red
-* Test case 7: Verify that clicking on the earthquake item, user is taken to a Map showing a marker corresponding to the lat,lng of where the earthquake occured
+* Test case 7: Verify that clicking on the earthquake item, user is taken to a Map showing a marker corresponding to the lat,lng of where the earthquake occured and the country name is also displayed if it can be determined
 
 ## Video Walkthrough 
 
